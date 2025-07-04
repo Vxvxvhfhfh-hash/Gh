@@ -67,6 +67,7 @@ client.on('message_create', async (msg) => {
   if (msg.fromMe) return;
 
   const chat = await msg.getChat();
+  const groupName = chat.isGroup ? chat.name : 'Session Privée';
   const text = msg.body.trim();
 
   // ------------------------------------------------------------------
@@ -80,7 +81,7 @@ client.on('message_create', async (msg) => {
     }
     await msg.reply('🖼️  Génération de l\'image, patientez…');
     try {
-      const imgPath = await generateImage(prompt);
+      const imgPath = await generateImage(`[Groupe: ${groupName}] ${prompt}`);
       const media = MessageMedia.fromFilePath(imgPath);
       await chat.sendMessage(media, { caption: prompt });
       fs.unlinkSync(imgPath);
@@ -109,11 +110,11 @@ client.on('message_create', async (msg) => {
     // Confirmation immédiate
     await chat.sendMessage(`⚔️  Action reçue: ${actionSentence}`);
 
-    // Narration par l'IA
+    // Narration par l'IA (avec contexte de groupe)
     try {
       const narration = await ai.models.generateContent({
         model: 'gemini-2.0-flash',
-        contents: `Tu es le narrateur d'un univers steampunk médiéval où Azeo, dieu devenu fou, a cédé la place aux Incurse Gods. Raconte en 4 phrases épiques la conséquence de l'action suivante, à la deuxième personne:
+        contents: `Tu es le narrateur d'un univers steampunk médiéval où Azeo, dieu devenu fou, a cédé la place aux Incurse Gods. Le nom du groupe WhatsApp est "${groupName}" et sert de repère pour suivre l'évolution du scénario. Raconte en exactement 4 phrases épiques, à la deuxième personne, la conséquence de l'action suivante:
 Action: ${actionSentence}`,
       });
       await chat.sendMessage(narration.text);
