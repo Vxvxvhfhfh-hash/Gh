@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "medieval-whatsapp-web",
+  "builds": [
+    { "src": "package.json", "use": "@vercel/next" }
+  ],
+  "env": {
+    "BOT_BASE_URL": "https://your-bot-domain.com"
+  }
+}
